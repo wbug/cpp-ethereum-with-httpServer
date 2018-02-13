@@ -13,3 +13,8 @@ target_link_libraries(devcore Boost::filesystem Boost::system Boost::thread Thre
 find_package(LevelDB)
 target_include_directories(devcore SYSTEM PUBLIC ${LEVELDB_INCLUDE_DIRS})
 target_link_libraries(devcore ${LEVELDB_LIBRARIES})
+
+# if(DB STREQUAL "ROCKSDB")
+    hunter_add_package(rocksdb)
+    find_package(RocksDB CONFIG REQUIRED)
+# endif()
