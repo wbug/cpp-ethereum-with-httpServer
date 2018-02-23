@@ -145,7 +145,7 @@ jobs:
       - CC:  gcc-6
       - GCOV: gcov-6
       - GENERATOR: Ninja
-      - BUILD_PARALLEL_JOBS: 4
+      - BUILD_PARALLEL_JOBS: 1
       - TEST_PARALLEL_JOBS: 4
       # TODO: Fix memory leaks reported in leveldb.
       # - CMAKE_OPTIONS: -DSANITIZE=address
