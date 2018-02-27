@@ -90,6 +90,9 @@ set<string> const c_knownParamNames = {c_minGasLimit, c_maxGasLimit, c_gasLimitB
     c_durationLimit, c_chainID, c_networkID, c_allowFutureBlocks};
 } // anonymous namespace
 
+/// parse simple genesis format into cpp genesis format
+js::mObject prepareFromGeneralConfig(js::mObject const& _config);
+
 ChainParams ChainParams::loadConfig(
     string const& _json, h256 const& _stateRoot, const boost::filesystem::path& _configPath) const
 {
@@ -98,7 +101,10 @@ ChainParams ChainParams::loadConfig(
 	json_spirit::read_string_or_throw(_json, val);
 	js::mObject obj = val.get_obj();
 
-	validateFieldNames(obj, c_knownChainConfigFields);
+    if (obj.count("version") && obj.at("version").get_str() == "1")
+        obj = prepareFromGeneralConfig(obj);
+
+    validateFieldNames(obj, c_knownChainConfigFields);
 
 	cp.sealEngineName = obj[c_sealEngine].get_str();
 	// params
@@ -280,4 +286,53 @@ bytes ChainParams::genesisBlock() const
 	block.appendRaw(RLPEmptyList);
 	block.appendRaw(RLPEmptyList);
 	return block.out();
+}
+
+#include <libethashseal/GenesisInfo.h>
+js::mObject prepareFromGeneralConfig(js::mObject const& _config)
+{
+    assert(_config.count("params"));
+    assert(_config.count("state"));
+    assert(_config.count("genesis"));
+    js::mObject params = _config.at("params").get_obj();
+    assert(params.count("forkRules"));
+    string forkRules = params.at("forkRules").get_str();
+    Network rules;
+    if (forkRules == "Frontier")
+        rules = Network::FrontierTest;
+    else if (forkRules == "Homestead")
+        rules = Network::HomesteadTest;
+    else if (forkRules == "EIP150")
+        rules = Network::EIP150Test;
+    else if (forkRules == "EIP158")
+        rules = Network::EIP158Test;
+    else if (forkRules == "Byzantium")
+        rules = Network::ByzantiumTest;
+    else
+        assert(false);
+    js::mValue v;
+    js::read_string(genesisInfo(rules), v);
+    js::mObject& obj = v.get_obj();
+
+    // overwrite with general config
+    obj["sealEngine"] = params.at("miningMethod");
+
+    // copy account configuration
+    for (auto const account : _config.at("state").get_obj())
+        obj["accounts"].get_obj().emplace(account);
+
+    // overwrite genesis configuration
+    js::mObject& cppGenesis = obj["genesis"].get_obj();
+    js::mObject const& genGenesis = _config.at("genesis").get_obj();
+
+    // Overwrite genesis fields
+    // Minimum fields from state tests
+    cppGenesis["author"] = genGenesis.at("coinbase");
+    cppGenesis["difficulty"] = genGenesis.at("difficulty");
+    cppGenesis["gasLimit"] = genGenesis.at("gasLimit");
+    cppGenesis["timestamp"] = genGenesis.at("timestamp");
+    cppGenesis["parentHash"] = genGenesis.at("parentHash");
+
+    std::cerr << js::write_string(v, true) << std::endl;
+    return v.get_obj();
 }
