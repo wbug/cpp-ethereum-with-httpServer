@@ -23,8 +23,11 @@
 #include "Test.h"
 #include <jsonrpccpp/common/errors.h>
 #include <jsonrpccpp/common/exception.h>
-#include <libethereum/ClientTest.h>
+#include <libdevcore/CommonJS.h>
+#include <libethcore/Common.h>
 #include <libethereum/ChainParams.h>
+#include <libethereum/ClientTest.h>
+#include <libethereum/Transaction.h>
 
 using namespace std;
 using namespace dev;
@@ -32,6 +35,57 @@ using namespace dev::rpc;
 using namespace jsonrpc;
 
 Test::Test(eth::Client& _eth): m_eth(_eth) {}
+
+string Test::test_getPostState(Json::Value const& param1)
+{
+    (void)param1;
+    h256 postState = m_eth.pendingInfo().stateRoot();
+    return toJS(postState);
+}
+
+string Test::test_addTransaction(Json::Value const& param1)
+{
+    try
+    {
+        if (param1["to"].empty())
+        {
+            // Create transaction constructor with secretKey
+            string data = param1["data"].asString();
+            eth::Transaction tr(u256(param1["value"].asString()),
+                u256(param1["gasPrice"].asString()), u256(param1["gasLimit"].asString()),
+                fromHex(data.substr(0, 2) == "0x" ? data.substr(2) : data, WhenError::Throw),
+                u256(param1["nonce"].asString()), Secret(param1["secretKey"].asString()));
+
+            if (asClientTest(m_eth).injectTransaction(tr.rlp()) == eth::ImportResult::Success)
+                return toJS(tr.sha3());
+            else
+                return toJS(h256());
+        }
+        else
+        {
+            // Transaction constructor with secretKey
+            string data = param1["data"].asString();
+            eth::Transaction tr(u256(param1["value"].asString()),
+                u256(param1["gasPrice"].asString()), u256(param1["gasLimit"].asString()),
+                Address(param1["to"].asString()),
+                fromHex(data.substr(0, 2) == "0x" ? data.substr(2) : data, WhenError::Throw),
+                u256(param1["nonce"].asString()), Secret(param1["secretKey"].asString()));
+
+            if (asClientTest(m_eth).injectTransaction(tr.rlp()) == eth::ImportResult::Success)
+            {
+                return toJS(tr.sha3());
+            }
+            else
+                return toJS(h256());
+        }
+    }
+    catch (...)
+    {
+        BOOST_THROW_EXCEPTION(JsonRpcException(Errors::ERROR_RPC_INVALID_PARAMS));
+    }
+
+    return "";
+}
 
 bool Test::test_setChainParams(Json::Value const& param1)
 {

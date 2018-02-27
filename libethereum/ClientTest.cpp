@@ -62,6 +62,7 @@ void ClientTest::setChainParams(string const& _genesis)
 
         reopenChain(params, WithExisting::Kill);
         setAuthor(params.author); //for some reason author is not being set
+        completeSync();           // set sync state to idle for mining
     }
     catch (...)
     {
