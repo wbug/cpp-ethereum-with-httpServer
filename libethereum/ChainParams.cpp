@@ -314,6 +314,10 @@ js::mObject prepareFromGeneralConfig(js::mObject const& _config)
     js::read_string(genesisInfo(rules), v);
     js::mObject& obj = v.get_obj();
 
+    assert(params.count("blockReward"));
+    js::mObject& originalParams = obj["params"].get_obj();
+    originalParams["blockReward"] = params["blockReward"];
+
     // overwrite with general config
     obj["sealEngine"] = params.at("miningMethod");
 

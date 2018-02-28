@@ -36,11 +36,58 @@ using namespace jsonrpc;
 
 Test::Test(eth::Client& _eth): m_eth(_eth) {}
 
+Json::Value fillJsonWithState(eth::State const& _state, eth::AccountMaskMap const& _map)
+{
+    bool mapEmpty = (_map.size() == 0);
+    Json::Value oState;
+    for (auto const& a : _state.addresses())
+    {
+        if (_map.size() && _map.find(a.first) == _map.end())
+            continue;
+
+        Json::Value o;
+        if (mapEmpty || _map.at(a.first).hasBalance())
+            o["balance"] = toCompactHexPrefixed(_state.balance(a.first), 1);
+        if (mapEmpty || _map.at(a.first).hasNonce())
+            o["nonce"] = toCompactHexPrefixed(_state.getNonce(a.first), 1);
+
+        if (mapEmpty || _map.at(a.first).hasStorage())
+        {
+            Json::Value store;
+            for (auto const& s : _state.storage(a.first))
+                store[toCompactHexPrefixed(s.second.first, 1)] =
+                    toCompactHexPrefixed(s.second.second, 1);
+            o["storage"] = store;
+        }
+
+        if (mapEmpty || _map.at(a.first).hasCode())
+        {
+            if (_state.code(a.first).size() > 0)
+                o["code"] = toHexPrefixed(_state.code(a.first));
+            else
+                o["code"] = "";
+        }
+        oState[toHexPrefixed(a.first)] = o;
+    }
+    return oState;
+}
+
 string Test::test_getPostState(Json::Value const& param1)
 {
-    (void)param1;
-    h256 postState = m_eth.pendingInfo().stateRoot();
-    return toJS(postState);
+    if (param1["version"] == "1")
+    {
+        // Just return the hash
+        h256 postState = m_eth.pendingInfo().stateRoot();
+        return toJS(postState);
+    }
+    else if (param1["version"] == "2")
+    {
+        eth::AccountMaskMap _map;
+        Json::Value out = fillJsonWithState(m_eth.postState().state(), _map);
+        Json::FastWriter fastWriter;
+        return fastWriter.write(out);
+    }
+    return "";
 }
 
 string Test::test_addTransaction(Json::Value const& param1)

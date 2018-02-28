@@ -60,9 +60,9 @@ void ClientTest::setChainParams(string const& _genesis)
         if (params.sealEngineName != "NoProof")
             BOOST_THROW_EXCEPTION(ChainParamsNotNoProof() << errinfo_comment("Provided configuration is not well formatted."));
 
+        setAuthor(params.author);  // Must be called before reopenChain !!!
         reopenChain(params, WithExisting::Kill);
-        setAuthor(params.author); //for some reason author is not being set
-        completeSync();           // set sync state to idle for mining
+        completeSync();  // set sync state to idle for mining
     }
     catch (...)
     {
