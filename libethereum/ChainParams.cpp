@@ -337,6 +337,5 @@ js::mObject prepareFromGeneralConfig(js::mObject const& _config)
     cppGenesis["timestamp"] = genGenesis.at("timestamp");
     cppGenesis["parentHash"] = genGenesis.at("parentHash");
 
-    std::cerr << js::write_string(v, true) << std::endl;
     return v.get_obj();
 }
