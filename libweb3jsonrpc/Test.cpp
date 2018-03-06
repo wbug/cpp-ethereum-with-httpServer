@@ -28,6 +28,7 @@
 #include <libethereum/ChainParams.h>
 #include <libethereum/ClientTest.h>
 #include <libethereum/Transaction.h>
+#include <libweb3jsonrpc/JsonHelper.h>
 
 using namespace std;
 using namespace dev;
@@ -77,7 +78,7 @@ string Test::test_getPostState(Json::Value const& param1)
     if (param1["version"] == "1")
     {
         // Just return the hash
-        h256 postState = m_eth.pendingInfo().stateRoot();
+        h256 postState = m_eth.blockChain().info().stateRoot();  // m_eth.pendingInfo().stateRoot();
         return toJS(postState);
     }
     else if (param1["version"] == "2")
@@ -94,37 +95,8 @@ string Test::test_addTransaction(Json::Value const& param1)
 {
     try
     {
-        if (param1["to"].empty())
-        {
-            // Create transaction constructor with secretKey
-            string data = param1["data"].asString();
-            eth::Transaction tr(u256(param1["value"].asString()),
-                u256(param1["gasPrice"].asString()), u256(param1["gasLimit"].asString()),
-                fromHex(data.substr(0, 2) == "0x" ? data.substr(2) : data, WhenError::Throw),
-                u256(param1["nonce"].asString()), Secret(param1["secretKey"].asString()));
-
-            if (asClientTest(m_eth).injectTransaction(tr.rlp()) == eth::ImportResult::Success)
-                return toJS(tr.sha3());
-            else
-                return toJS(h256());
-        }
-        else
-        {
-            // Transaction constructor with secretKey
-            string data = param1["data"].asString();
-            eth::Transaction tr(u256(param1["value"].asString()),
-                u256(param1["gasPrice"].asString()), u256(param1["gasLimit"].asString()),
-                Address(param1["to"].asString()),
-                fromHex(data.substr(0, 2) == "0x" ? data.substr(2) : data, WhenError::Throw),
-                u256(param1["nonce"].asString()), Secret(param1["secretKey"].asString()));
-
-            if (asClientTest(m_eth).injectTransaction(tr.rlp()) == eth::ImportResult::Success)
-            {
-                return toJS(tr.sha3());
-            }
-            else
-                return toJS(h256());
-        }
+        eth::TransactionSkeleton tr = eth::toTransactionSkeleton(param1);
+        m_eth.submitTransaction(tr, Secret(param1["secretKey"].asString()));
     }
     catch (...)
     {

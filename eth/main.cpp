@@ -1067,8 +1067,8 @@ int main(int argc, char** argv)
     // allow any gasPrice in testing mode
     if (testingMode)
     {
-        askPrice = 1;
-        bidPrice = 1;
+        askPrice = 0;
+        bidPrice = 0;
     }
     std::shared_ptr<eth::TrivialGasPricer> gasPricer = make_shared<eth::TrivialGasPricer>(askPrice, bidPrice);
     eth::Client* c = nodeMode == NodeMode::Full ? web3.ethereum() : nullptr;
