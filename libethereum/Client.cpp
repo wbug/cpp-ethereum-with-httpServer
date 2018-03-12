@@ -670,11 +670,18 @@ void Client::doWork(bool _doWait)
     if (m_syncBlockQueue.compare_exchange_strong(t, false))
         syncBlockQueue();
 
+    if (shouldStop())
+        return;
+
     if (m_needStateReset)
     {
         resetState();
         m_needStateReset = false;
     }
+
+    if (shouldStop())
+        return;
+
 
     t = true;
     bool isSealed = false;
@@ -683,11 +690,23 @@ void Client::doWork(bool _doWait)
     if (!isSealed && !isMajorSyncing() && !m_remoteWorking && m_syncTransactionQueue.compare_exchange_strong(t, false))
         syncTransactionQueue();
 
+    if (shouldStop())
+        return;
+
     tick();
+
+    if (shouldStop())
+        return;
 
     rejigSealing();
 
+    if (shouldStop())
+        return;
+
     callQueuedFunctions();
+
+    if (shouldStop())
+        return;
 
     DEV_READ_GUARDED(x_working)
         isSealed = m_working.isSealed();
