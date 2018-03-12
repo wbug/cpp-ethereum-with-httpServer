@@ -335,7 +335,5 @@ js::mObject prepareFromGeneralConfig(js::mObject const& _config)
     cppGenesis["difficulty"] = genGenesis.at("difficulty");
     cppGenesis["gasLimit"] = genGenesis.at("gasLimit");
     cppGenesis["timestamp"] = genGenesis.at("timestamp");
-    cppGenesis["parentHash"] = genGenesis.at("parentHash");
-
     return v.get_obj();
 }
