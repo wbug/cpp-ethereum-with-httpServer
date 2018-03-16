@@ -293,13 +293,20 @@ bytes ChainParams::genesisBlock() const
 }
 
 #include <libethashseal/GenesisInfo.h>
+void checkFieldExist(js::mObject const& _config, string const& _field)
+{
+    if (!_config.count(_field))
+        BOOST_THROW_EXCEPTION(
+            MissingField() << errinfo_comment("Missing field '" + _field + "' in genesis config"));
+}
+
 js::mObject prepareFromGeneralConfig(js::mObject const& _config)
 {
-    assert(_config.count("params"));
-    assert(_config.count("state"));
-    assert(_config.count("genesis"));
+    checkFieldExist(_config, "params");
+    checkFieldExist(_config, "state");
+    checkFieldExist(_config, "genesis");
     js::mObject params = _config.at("params").get_obj();
-    assert(params.count("forkRules"));
+    checkFieldExist(params, "forkRules");
     string forkRules = params.at("forkRules").get_str();
     Network rules;
     if (forkRules == "Frontier")
@@ -313,12 +320,13 @@ js::mObject prepareFromGeneralConfig(js::mObject const& _config)
     else if (forkRules == "Byzantium")
         rules = Network::ByzantiumTest;
     else
-        assert(false);
+        BOOST_THROW_EXCEPTION(
+            UnknownConfig() << errinfo_comment("Unrecognized network config: '" + forkRules + "'"));
     js::mValue v;
     js::read_string(genesisInfo(rules), v);
     js::mObject& obj = v.get_obj();
 
-    assert(params.count("blockReward"));
+    checkFieldExist(params, "blockReward");
     js::mObject& originalParams = obj["params"].get_obj();
     originalParams["blockReward"] = params["blockReward"];
 
