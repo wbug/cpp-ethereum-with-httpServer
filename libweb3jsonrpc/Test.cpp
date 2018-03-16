@@ -73,20 +73,34 @@ Json::Value fillJsonWithState(eth::State const& _state, eth::AccountMaskMap cons
     return oState;
 }
 
+string exportLog(eth::LogEntries const& _logs)
+{
+    RLPStream s;
+    s.appendList(_logs.size());
+    for (eth::LogEntry const& l : _logs)
+        l.streamRLP(s);
+    return toHexPrefixed(sha3(s.out()));
+}
+
+const int c_postStateJustHashVersion = 1;
+const int c_postStateFullStateVersion = 2;
+const int c_postStateLogHashVersion = 3;
 string Test::test_getPostState(Json::Value const& param1)
 {
-    if (param1["version"] == "1")
-    {
-        // Just return the hash
-        h256 postState = m_eth.blockChain().info().stateRoot();  // m_eth.pendingInfo().stateRoot();
-        return toJS(postState);
-    }
-    else if (param1["version"] == "2")
+    Json::Value out;
+    Json::FastWriter fastWriter;
+    if (u256(param1["version"].asString()) == c_postStateJustHashVersion)
+        return toJS(m_eth.blockChain().info().stateRoot());
+    else if (u256(param1["version"].asString()) == c_postStateFullStateVersion)
     {
         eth::AccountMaskMap _map;
-        Json::Value out = fillJsonWithState(m_eth.postState().state(), _map);
-        Json::FastWriter fastWriter;
+        out = fillJsonWithState(m_eth.postState().state(), _map);
         return fastWriter.write(out);
+    }
+    else if (u256(param1["version"].asString()) == c_postStateFullStateVersion)
+    {
+        h256 topBlockHash = m_eth.blockChain().currentHash();
+        return toJS(exportLog(m_eth.blockChain().transactionReceipt(topBlockHash, 0).log()));
     }
     return "";
 }
