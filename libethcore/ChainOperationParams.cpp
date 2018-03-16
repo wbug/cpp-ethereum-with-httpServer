@@ -43,7 +43,7 @@ PrecompiledContract::PrecompiledContract(
 
 ChainOperationParams::ChainOperationParams()
   : m_blockReward("0x4563918244F40000"),
-    m_overwriteBlockRewardFromConfig(false),
+    m_allowRewardOverwrite(true),
     minGasLimit(0x1388),
     maxGasLimit("0x7fffffffffffffff"),
     gasLimitBoundDivisor(0x0400),
@@ -74,7 +74,7 @@ EVMSchedule const& ChainOperationParams::scheduleForBlockNumber(u256 const& _blo
 
 u256 ChainOperationParams::blockReward(EVMSchedule const& _schedule) const
 {
-    if (_schedule.blockRewardOverwrite && !m_overwriteBlockRewardFromConfig)
+    if (_schedule.blockRewardOverwrite && m_allowRewardOverwrite)
         return *_schedule.blockRewardOverwrite;
 	else
 		return m_blockReward;
@@ -83,5 +83,4 @@ u256 ChainOperationParams::blockReward(EVMSchedule const& _schedule) const
 void ChainOperationParams::setBlockReward(u256 const& _newBlockReward)
 {
 	m_blockReward = _newBlockReward;
-    m_overwriteBlockRewardFromConfig = true;
 }

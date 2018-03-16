@@ -102,13 +102,17 @@ ChainParams ChainParams::loadConfig(
 	js::mObject obj = val.get_obj();
 
     if (obj.count("version") && obj.at("version").get_str() == "1")
+    {
         obj = prepareFromGeneralConfig(obj);
+        cp.setBlockRewardOvewrite(
+            false);  // do not allow hardcode block reward overwrite (Byzantium)
+    }
 
     validateFieldNames(obj, c_knownChainConfigFields);
 
 	cp.sealEngineName = obj[c_sealEngine].get_str();
-	// params
-	js::mObject params = obj[c_params].get_obj();
+    // params1
+    js::mObject params = obj[c_params].get_obj();
 	validateFieldNames(params, c_knownParamNames);
 	cp.accountStartNonce = u256(fromBigEndian<u256>(fromHex(params[c_accountStartNonce].get_str())));
 	cp.maximumExtraDataSize = u256(fromBigEndian<u256>(fromHex(params[c_maximumExtraDataSize].get_str())));
