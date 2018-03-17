@@ -97,10 +97,10 @@ string Test::test_getPostState(Json::Value const& param1)
         out = fillJsonWithState(m_eth.postState().state(), _map);
         return fastWriter.write(out);
     }
-    else if (u256(param1["version"].asString()) == c_postStateFullStateVersion)
+    else if (u256(param1["version"].asString()) == c_postStateLogHashVersion)
     {
         h256 topBlockHash = m_eth.blockChain().currentHash();
-        return toJS(exportLog(m_eth.blockChain().transactionReceipt(topBlockHash, 0).log()));
+        return exportLog(m_eth.blockChain().transactionReceipt(topBlockHash, 0).log());
     }
     return "";
 }
