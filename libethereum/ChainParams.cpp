@@ -319,6 +319,8 @@ js::mObject prepareFromGeneralConfig(js::mObject const& _config)
         rules = Network::EIP158Test;
     else if (forkRules == "Byzantium")
         rules = Network::ByzantiumTest;
+	else if (forkRules == "Constantinople")
+		rules = Network::ConstantinopleTest;
     else
         BOOST_THROW_EXCEPTION(
             UnknownConfig() << errinfo_comment("Unrecognized network config: '" + forkRules + "'"));
