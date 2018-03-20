@@ -21,6 +21,7 @@
  */
 
 #include "Test.h"
+#include "BuildInfo.h"
 #include <jsonrpccpp/common/errors.h>
 #include <jsonrpccpp/common/exception.h>
 #include <libdevcore/CommonJS.h>
@@ -36,6 +37,22 @@ using namespace dev::rpc;
 using namespace jsonrpc;
 
 Test::Test(eth::Client& _eth): m_eth(_eth) {}
+
+string prepareVersionString()
+{
+    // cpp-1.3.0+commit.6be76b64.Linux.g++
+    string commit(DEV_QUOTED(ETH_COMMIT_HASH));
+    string version = "cpp-" + string(ETH_PROJECT_VERSION);
+    version += "+commit." + commit.substr(0, 8);
+    version +=
+        "." + string(DEV_QUOTED(ETH_BUILD_OS)) + "." + string(DEV_QUOTED(ETH_BUILD_COMPILER));
+    return version;
+}
+
+string Test::test_getClientInfo()
+{
+    return prepareVersionString();
+}
 
 Json::Value fillJsonWithState(eth::State const& _state, eth::AccountMaskMap const& _map)
 {

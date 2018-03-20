@@ -14,6 +14,8 @@ namespace dev {
             public:
                 TestFace()
                 {
+
+                    this->bindAndAddMethod(jsonrpc::Procedure("test_getClientInfo", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_STRING,  NULL), &dev::rpc::TestFace::test_getClientInfoI);
                     this->bindAndAddMethod(
                         jsonrpc::Procedure("test_getPostState", jsonrpc::PARAMS_BY_POSITION,
                             jsonrpc::JSON_STRING, "param1", jsonrpc::JSON_OBJECT, NULL),
@@ -27,6 +29,11 @@ namespace dev {
                     this->bindAndAddMethod(jsonrpc::Procedure("test_modifyTimestamp", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_BOOLEAN, "param1",jsonrpc::JSON_INTEGER, NULL), &dev::rpc::TestFace::test_modifyTimestampI);
                     this->bindAndAddMethod(jsonrpc::Procedure("test_addBlock", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_BOOLEAN, "param1",jsonrpc::JSON_STRING, NULL), &dev::rpc::TestFace::test_addBlockI);
                     this->bindAndAddMethod(jsonrpc::Procedure("test_rewindToBlock", jsonrpc::PARAMS_BY_POSITION, jsonrpc::JSON_BOOLEAN, "param1",jsonrpc::JSON_INTEGER, NULL), &dev::rpc::TestFace::test_rewindToBlockI);
+                }
+                inline virtual void test_getClientInfoI(const Json::Value& request, Json::Value& response)
+                {
+                    (void)request;
+                    response = this->test_getClientInfo();
                 }
                 inline virtual void test_getPostStateI(
                     const Json::Value& request, Json::Value& response)
@@ -59,6 +66,7 @@ namespace dev {
                     response = this->test_rewindToBlock(request[0u].asInt());
                 }
 
+                virtual std::string test_getClientInfo() = 0;
                 virtual std::string test_getPostState(const Json::Value& param1) = 0;
                 virtual std::string test_addTransaction(const Json::Value& param1) = 0;
                 virtual bool test_setChainParams(const Json::Value& param1) = 0;
