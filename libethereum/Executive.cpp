@@ -186,6 +186,19 @@ void Executive::initialize(Transaction const& _transaction)
     try
     {
         m_sealEngine.verifyTransaction(ImportRequirements::Everything, m_t, m_envInfo.header(), m_envInfo.gasUsed());
+
+        eth::EVMSchedule const& schedule = m_sealEngine.evmSchedule(m_envInfo.header().number());
+
+        // Pre calculate the gas needed for execution
+        if (m_t.baseGasRequired(schedule) > m_t.gas())
+            BOOST_THROW_EXCEPTION(OutOfGasIntrinsic() << RequirementError(
+                                      (bigint)(m_t.baseGasRequired(schedule)), (bigint)m_t.gas()));
+
+        // Avoid transactions that would take us beyond the block gas limit.
+        if (m_envInfo.gasUsed() + (bigint)m_t.gas() > m_envInfo.header().gasLimit())
+            BOOST_THROW_EXCEPTION(BlockGasLimitReached() << RequirementError(
+                                      (bigint)(m_envInfo.header().gasLimit() - m_envInfo.gasUsed()),
+                                      (bigint)m_t.gas()));
     }
     catch (Exception const& ex)
     {
@@ -234,6 +247,9 @@ bool Executive::execute()
     // Pay...
     clog(StateDetail) << "Paying" << formatBalance(m_gasCost) << "from sender for gas (" << m_t.gas() << "gas at" << formatBalance(m_t.gasPrice()) << ")";
     m_s.subBalance(m_t.sender(), m_gasCost);
+
+    std::cerr << "TR GAS: " << m_t.gas() << std::endl;
+    std::cerr << "TR REQ: " << (u256)m_baseGasRequired << std::endl;
 
     if (m_t.isCreation())
         return create(m_t.sender(), m_t.value(), m_t.gasPrice(), m_t.gas() - (u256)m_baseGasRequired, &m_t.data(), m_t.sender());
