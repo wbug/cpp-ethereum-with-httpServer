@@ -2,10 +2,11 @@
 
 Here bring back HTTP server to cpp-ethereum Node. and will synchronize with https://github.com/ethereum/cpp-ethereum 
 
-Notes Why bring back:
-HttpServer in C++ is exceptionally portable other than using httpProxy in other language.
-It is easy to startup for beginner if we have HttpServer in cpp-ethereum(http looks friendly).
-We can still tun off the httpServer by edit cmakefiles.
+Notes Why bring back:`
+
+1，HttpServer in C++ is exceptionally portable other than using httpProxy in other language.`
+2，It is easy to startup for beginner if we have HttpServer in cpp-ethereum(http looks friendly).`
+3，We can still tun off the httpServer by edit cmakefiles.`
 
 
 ## Contact
