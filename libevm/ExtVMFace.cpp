@@ -161,9 +161,10 @@ void create(evm_result* o_result, ExtVMFace& _env, evm_message const* _msg) noex
 		o_result->output_data = nullptr;
 		o_result->output_size = 0;
 	}
-	else if (false) // FIXME: detect and support revert properly
+	else
 	{
-		o_result->status_code = EVM_REVERT;
+		// FIXME: detect and support revert properly
+		o_result->status_code = EVM_FAILURE;
 
 		// Pass the output to the EVM without a copy. The EVM will delete it
 		// when finished with it.
@@ -186,12 +187,6 @@ void create(evm_result* o_result, ExtVMFace& _env, evm_message const* _msg) noex
 			// This is normal pattern when placement new operator is used.
 			output.~bytes();
 		};
-	}
-	else
-	{
-		o_result->status_code = EVM_FAILURE;
-		o_result->output_data = nullptr;
-		o_result->output_size = 0;
 	}
 }
 
@@ -225,39 +220,31 @@ void call(evm_result* o_result, evm_context* _context, evm_message const* _msg) 
 	// is optional and should not be passed to the contract, but can be useful
 	// for EVM in general.
 	//
-	// Resort to failures for the moment.
+	// FIXME: detect and support revert properly
 	o_result->status_code = success ? EVM_SUCCESS : EVM_FAILURE;
 	o_result->gas_left = static_cast<int64_t>(params.gas);
 
 	// Pass the output to the EVM without a copy. The EVM will delete it
 	// when finished with it.
-	if (o_result->status_code == EVM_SUCCESS || o_result->status_code == EVM_REVERT)
-	{
-		// First assign reference. References are not invalidated when vector
-		// of bytes is moved. See `.takeBytes()` below.
-		o_result->output_data = output.data();
-		o_result->output_size = output.size();
 
-		// Place a new vector of bytes containing output in result's reserved memory.
-		auto* data = evm_get_optional_data(o_result);
-		static_assert(sizeof(bytes) <= sizeof(*data), "Vector is too big");
-		new(data) bytes(output.takeBytes());
-		// Set the destructor to delete the vector.
-		o_result->release = [](evm_result const* _result)
-		{
-			auto* data = evm_get_const_optional_data(_result);
-			auto& output = reinterpret_cast<bytes const&>(*data);
-			// Explicitly call vector's destructor to release its data.
-			// This is normal pattern when placement new operator is used.
-			output.~bytes();
-		};
-	}
-	else
+	// First assign reference. References are not invalidated when vector
+	// of bytes is moved. See `.takeBytes()` below.
+	o_result->output_data = output.data();
+	o_result->output_size = output.size();
+
+	// Place a new vector of bytes containing output in result's reserved memory.
+	auto* data = evm_get_optional_data(o_result);
+	static_assert(sizeof(bytes) <= sizeof(*data), "Vector is too big");
+	new(data) bytes(output.takeBytes());
+	// Set the destructor to delete the vector.
+	o_result->release = [](evm_result const* _result)
 	{
-		o_result->output_data = nullptr;
-		o_result->output_size = 0;
-		o_result->release = nullptr;
-	}
+		auto* data = evm_get_const_optional_data(_result);
+		auto& output = reinterpret_cast<bytes const&>(*data);
+		// Explicitly call vector's destructor to release its data.
+		// This is normal pattern when placement new operator is used.
+		output.~bytes();
+	};
 }
 
 evm_context_fn_table const fnTable = {
