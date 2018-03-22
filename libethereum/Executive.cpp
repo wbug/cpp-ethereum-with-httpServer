@@ -248,9 +248,7 @@ bool Executive::execute()
     clog(StateDetail) << "Paying" << formatBalance(m_gasCost) << "from sender for gas (" << m_t.gas() << "gas at" << formatBalance(m_t.gasPrice()) << ")";
     m_s.subBalance(m_t.sender(), m_gasCost);
 
-    std::cerr << "TR GAS: " << m_t.gas() << std::endl;
-    std::cerr << "TR REQ: " << (u256)m_baseGasRequired << std::endl;
-
+    assert(m_t.gas() >= (u256)m_baseGasRequired);
     if (m_t.isCreation())
         return create(m_t.sender(), m_t.value(), m_t.gasPrice(), m_t.gas() - (u256)m_baseGasRequired, &m_t.data(), m_t.sender());
     else

@@ -107,7 +107,7 @@ string Test::test_getPostState(Json::Value const& param1)
     Json::Value out;
     Json::FastWriter fastWriter;
     if (u256(param1["version"].asString()) == c_postStateJustHashVersion)
-        return toJS(m_eth.blockChain().info().stateRoot());
+        return toJS(m_eth.postState().state().rootHash());
     else if (u256(param1["version"].asString()) == c_postStateFullStateVersion)
     {
         eth::AccountMaskMap _map;
