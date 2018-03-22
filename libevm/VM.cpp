@@ -40,39 +40,40 @@ evm_result execute(evm_instance* _instance, evm_context* _context, evm_revision 
 {
     auto vm = static_cast<dev::eth::VM*>(_instance);
     evm_result result = {};
+    dev::eth::owning_bytes_ref output;
+
     try
     {
-        auto output = vm->exec(_context, _rev, _msg, _code, _codeSize);
+        output = vm->exec(_context, _rev, _msg, _code, _codeSize);
         result.status_code = EVM_SUCCESS;
         result.gas_left = vm->m_io_gas;
-        auto output_data = new uint8_t[output.size()];
-        std::memcpy(output_data, output.data(), output.size());
-        result.output_data = output_data;
-        result.output_size = output.size();
-        result.release = delete_output;
-        return result;
     }
     catch (dev::eth::RevertInstruction& ex)
     {
         result.status_code = EVM_REVERT;
         result.gas_left = vm->m_io_gas;
-        auto output_data = new uint8_t[ex.output().size()];
-        std::memcpy(output_data, ex.output().data(), ex.output().size());
-        result.output_data = output_data;
-        result.output_size = ex.output().size();
-        result.release = delete_output;
-        return result;
+        output = ex.output();  // This moves the output from the exception!
     }
     catch (dev::eth::VMException const&)
     {
         result.status_code = EVM_FAILURE;
-        return result;
     }
     catch (...)
     {
         result.status_code = EVM_INTERNAL_ERROR;
-        return result;
     }
+
+    if (!output.empty())
+    {
+        // Make a copy of the output.
+        auto outputData = new uint8_t[output.size()];
+        std::memcpy(outputData, output.data(), output.size());
+        result.output_data = outputData;
+        result.output_size = output.size();
+        result.release = delete_output;
+    }
+
+    return result;
 }
 }
 
