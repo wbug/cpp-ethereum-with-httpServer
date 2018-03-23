@@ -43,6 +43,9 @@ struct TransactionSkeleton;
 class Interface;
 }
 
+extern const unsigned SensibleHttpThreads;
+extern const unsigned SensibleHttpPort;
+
 }
 
 namespace dev

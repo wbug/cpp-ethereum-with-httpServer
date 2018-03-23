@@ -99,12 +99,10 @@ find_package(Snappy CONFIG REQUIRED)
 hunter_add_package(cryptopp)
 find_package(cryptopp CONFIG REQUIRED)
 
-hunter_add_package(libjson-rpc-cpp)
-find_package(libjson-rpc-cpp CONFIG REQUIRED)
-
 hunter_add_package(libscrypt)
 find_package(libscrypt CONFIG REQUIRED)
 
+include(ProjectJsonRpcCpp)
 include(ProjectSecp256k1)
 include(ProjectLibFF)
 
