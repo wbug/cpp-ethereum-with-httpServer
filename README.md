@@ -1,32 +1,15 @@
-# cpp-ethereum - Ethereum C++ client
+# cpp-ethereum with httpServer - Ethereum C++ client
 
-This repository contains [cpp-ethereum](http://cpp-ethereum.org), the [Ethereum](https://ethereum.org) C++ client.
+Here bring back HTTP server to cpp-ethereum Node. and will synchronize with https://github.com/ethereum/cpp-ethereum 
 
-It is the third most popular of the Ethereum clients, behind [geth](https://github.com/ethereum/go-ethereum) (the [go](https://golang.org)
-client) and [Parity](https://github.com/ethcore/parity) (the [rust](https://www.rust-lang.org/) client).  The code is exceptionally
-[portable](http://cpp-ethereum.org/portability.html) and has been used successfully on a very broad range
-of operating systems and hardware.
+Notes Why bring back:`
+
+1，HttpServer in C++ is exceptionally portable other than using httpProxy in other language.`
+2，It is easy to startup for beginner if we have HttpServer in cpp-ethereum(http looks friendly).`
+3，We can still tun off the httpServer by edit cmakefiles.`
 
 
 ## Contact
-
-[![Gitter](https://img.shields.io/gitter/room/ethereum/cpp-ethereum.svg)](https://gitter.im/ethereum/cpp-ethereum)
-[![GitHub Issues](https://img.shields.io/github/issues-raw/ethereum/cpp-ethereum.svg)](https://github.com/ethereum/cpp-ethereum/issues)
-
-- Chat in [cpp-ethereum channel on Gitter](https://gitter.im/ethereum/cpp-ethereum).
-- Report bugs, issues or feature requests using [GitHub issues](issues/new).
-
-
-## Getting Started
-
-The Ethereum Documentation site hosts the **[cpp-ethereum homepage](http://cpp-ethereum.org)**, which
-has a Quick Start section.
-
-
-Operating system | Status
----------------- | ----------
-Ubuntu and macOS | [![TravisCI](https://img.shields.io/travis/ethereum/cpp-ethereum/develop.svg)](https://travis-ci.org/ethereum/cpp-ethereum)
-Windows          | [![AppVeyor](https://img.shields.io/appveyor/ci/ethereum/cpp-ethereum/develop.svg)](https://ci.appveyor.com/project/ethereum/cpp-ethereum)
 
 
 ## Building from source
@@ -118,47 +101,6 @@ After configuration is completed the `cpp-ethereum.sln` can be found in the
 cmake .. -G "Visual Studio 14 2015 Win64"
 ```
 
-## Contributing
-
-[![Contributors](https://img.shields.io/github/contributors/ethereum/cpp-ethereum.svg)](https://github.com/ethereum/cpp-ethereum/graphs/contributors)
-[![Gitter](https://img.shields.io/gitter/room/ethereum/cpp-ethereum.svg)](https://gitter.im/ethereum/cpp-ethereum)
-[![up-for-grabs](https://img.shields.io/github/issues-raw/ethereum/cpp-ethereum/up-for-grabs.svg)](https://github.com/ethereum/cpp-ethereum/labels/up-for-grabs)
-
-The current codebase is the work of many, many hands, with nearly 100
-[individual contributors](https://github.com/ethereum/cpp-ethereum/graphs/contributors) over the course of its development.
-
-Our day-to-day development chat happens on the
-[cpp-ethereum](https://gitter.im/ethereum/cpp-ethereum) Gitter channel.
-
-All contributions are welcome! We try to keep a list of tasks that are suitable
-for newcomers under the tag 
-[up-for-grabs](https://github.com/ethereum/cpp-ethereum/labels/up-for-grabs).
-If you have any questions, please just ask.
-
-Please read [CONTRIBUTING](CONTRIBUTING.md) and [CODING_STYLE](CODING_STYLE.md) 
-thoroughly before making alterations to the code base.
-
-All development goes in develop branch.
-
-
-## Mining
-
-This project is **not suitable for Ethereum mining**. The support for GPU mining 
-has been dropped some time ago including the ethminer tool. Use the ethminer tool from https://github.com/ethereum-mining/ethminer.
-
-## Testing
-
-To run the tests, make sure you clone https://github.com/ethereum/tests and point the environment variable
-`ETHEREUM_TEST_PATH` to that path.
-
-## Documentation
-
-- [Internal documentation for developers](doc/index.rst).
-- [Outdated documentation for end users](http://www.ethdocs.org/en/latest/ethereum-clients/cpp-ethereum/).
-
-
 ## License
-
-[![License](https://img.shields.io/github/license/ethereum/cpp-ethereum.svg)](LICENSE)
 
 All contributions are made under the [GNU General Public License v3](https://www.gnu.org/licenses/gpl-3.0.en.html). See [LICENSE](LICENSE).
