@@ -6,7 +6,7 @@
 - 对于cpp-ethereum 新手们，使用基于 http的 jsonRpc2.0与cpp-ethereum交互是很多人感觉很自然的事。
 - httpServer 默认是不启动的， 同时我们也可以通过在cmake/ProjectJsonRpcCpp.cmake 里设置 -DHTTP_SERVER=OFF 在编译的把httpServer组关了
 
-所以在这里我把 httpServer 给带了回来，同时尽量与 https://github.com/ethereum/cpp-ethereum  同步更新
+所以在这里我把 httpServer 给带了回来，同时定期与 https://github.com/ethereum/cpp-ethereum  进行同步
 
 
  23 Nov 2017 , cpp-ethereum drop http server. but sometime i think we need it ：
