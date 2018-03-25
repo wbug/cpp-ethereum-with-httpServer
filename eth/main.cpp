@@ -302,6 +302,19 @@ int main(int argc, char** argv)
     addClientOption("admin", po::value<string>()->value_name("<password>"),
         "Specify admin session key for JSON-RPC (default: auto-generated and printed at "
         "start-up).");
+	/*
+	-j, --json - rpc  Enable JSON - RPC server(default: off).\n
+		--admin - via - http  Expose admin interface via http - UNSAFE!(default: off).\n"
+		--json - rpc - port <n>  Specify JSON - RPC server port(implies '-j', default: " << SensibleHttpPort << ").\n"
+		--rpccorsdomain <domain>  Domain on which to send Access - Control - Allow - Origin header.\n"*/
+	addClientOption("json-rpc,j", "Enable JSON - RPC server(default: off).");
+	addClientOption("json-rpc-port", po::value<string>()->value_name("<number>"),
+		"Specify json-rpc-port port for JSON-RPC (default: 8545).");
+	addClientOption("admin-via-http", "Enable admin-via-http  over  JSON - RPC server(default: off).");
+	addClientOption("rpcCorsDomain", po::value<string>()->value_name("<domain>"),
+		"Domain on which to send Access - Control - Allow - Origin header");	
+
+
     addClientOption("kill,K", "Kill the blockchain first.");
     addClientOption("rebuild,R", "Rebuild the blockchain from the existing database.");
     addClientOption("rescue", "Attempt to rescue a corrupt database.\n");
@@ -542,7 +555,7 @@ int main(int argc, char** argv)
 	-else if (arg == "--rpccorsdomain" && i + 1 < argc)
 	- rpcCorsDomain = argv[++i];*/
 
-	if (vm.count("json-rpc"))
+	if (vm.count("json-rpc")|| vm.count("j"))
 		jsonRPCURL = jsonRPCURL == -1 ? SensibleHttpPort : jsonRPCURL;
 	if (vm.count("admin-via-http"))
 		adminViaHttp = true;
