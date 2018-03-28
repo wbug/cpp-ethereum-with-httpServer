@@ -1,12 +1,28 @@
 # cpp-ethereum with httpServer - Ethereum C++ client
 
-Here bring back HTTP server to cpp-ethereum Node. and will synchronize with https://github.com/ethereum/cpp-ethereum 
 
-Notes Why bring back:`
+23 Nov 2017, cpp-ethereum 把 httserver 给删除了， 但很多时候我们需要它：
+- 用 C++ 写的 HttpServer 相比用其它语言写的 httpProxy 来比更轻便的
+- 对于cpp-ethereum 新手们，使用基于 http的 jsonRpc2.0与cpp-ethereum交互是很多人感觉很自然的事。
+- httpServer 默认是不启动的， 同时我们也可以通过在cmake/ProjectJsonRpcCpp.cmake 里设置 -DHTTP_SERVER=OFF 在编译的把httpServer组关了
 
-1，HttpServer in C++ is exceptionally portable other than using httpProxy in other language.`
-2，It is easy to startup for beginner if we have HttpServer in cpp-ethereum(http looks friendly).`
-3，We can still tun off the httpServer by edit cmakefiles.`
+所以在这里我把 httpServer 给带了回来，同时定期与 https://github.com/ethereum/cpp-ethereum  进行同步
+
+
+ 23 Nov 2017 , cpp-ethereum drop http server. but sometime i think we need it ：
+ 
+- HttpServer in C++ is exceptionally portable other than using httpProxy in other language.
+- It is easy to startup for beginner if we have HttpServer in cpp-ethereum(http looks friendly).
+- HttpServer is not started by default when we run cpp-ethererm . and we can tun off the httpServer by set  -DHTTP_SERVER=OFF in cmake/ProjectJsonRpcCpp.cmake.
+
+
+so we  bring back HTTP server to cpp-ethereum Node. and try synchronize with https://github.com/ethereum/cpp-ethereum 
+
+
+
+
+
+
 
 
 ## Contact
