@@ -8,6 +8,8 @@
 
 所以在这里我把 httpServer 给带了回来，同时定期与 https://github.com/ethereum/cpp-ethereum  进行同步
 
+要使用httpServer，在启动时候加参数： -j ， 如果需要指定端口加参数： --json-rpc-port 8545
+
 
  23 Nov 2017 , cpp-ethereum drop http server. but sometime i think we need it ：
  
@@ -17,6 +19,8 @@
 
 
 so we  bring back HTTP server to cpp-ethereum Node. and try synchronize with https://github.com/ethereum/cpp-ethereum 
+
+when use httpServer, add args: -j  , you can specific a port for http by args:  --json-rpc-port 8545
 
 
 

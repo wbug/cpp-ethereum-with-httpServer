@@ -308,7 +308,7 @@ int main(int argc, char** argv)
 		--json - rpc - port <n>  Specify JSON - RPC server port(implies '-j', default: " << SensibleHttpPort << ").\n"
 		--rpccorsdomain <domain>  Domain on which to send Access - Control - Allow - Origin header.\n"*/
 	addClientOption("json-rpc,j", "Enable JSON - RPC server(default: off).");
-	addClientOption("json-rpc-port", po::value<string>()->value_name("<number>"),
+	addClientOption("json-rpc-port", po::value<int>()->value_name("<PORT>"),
 		"Specify json-rpc-port port for JSON-RPC (default: 8545).");
 	addClientOption("admin-via-http", "Enable admin-via-http  over  JSON - RPC server(default: off).");
 	addClientOption("rpcCorsDomain", po::value<string>()->value_name("<domain>"),
