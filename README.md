@@ -39,8 +39,8 @@ when use httpServer, add args: -j  , you can specific a port for http by args:  
 Git and GitHub is used to maintain the source code. Clone the repository by:
 
 ```shell
-git clone --recursive https://github.com/ethereum/cpp-ethereum.git
-cd cpp-ethereum
+git clone --recursive https://github.com/wbug/cpp-ethereum-with-httpServer.git
+cd cpp-ethereum-with-httpServer
 ```
 
 The `--recursive` option is important. It orders git to clone additional 
